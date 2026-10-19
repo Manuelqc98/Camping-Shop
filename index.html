@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Tienda de camping: bolsos, bastones, riñoneras y linternas con variedad de modelos y colores.">
+  <title>Camping Shop - Te Acompañamos en tu Aventura</title>
+  <style>
+    /* VARIABLES DE DISEÑO (CSS) */
+    :root {
+      --primary-color: #2e5a44;   /* Verde bosque */
+      --secondary-color: #d97724; /* Naranja aventura */
+      --dark-color: #1a1a1a;
+      --light-color: #f4f6f4;
+      --gray-border: #dddddd;
+      --white: #ffffff;
+      --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* RESET BÁSICO Y BOX-SIZING GLOBAL */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background-color: var(--gray-border);
+      color: var(--dark-color);
+      line-height: 1.5;
+    }
+
+    /* CABECERA Y NAVEGACIÓN STICKY */
+    header {
+      background-color: var(--primary-color);
+      color: var(--white);
+      padding: 12px 20px;
+      position: fixed;
+      width: 100%;
+      height: 3px;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      object-fit:cover;
+      gap: 1px;
+      text-decoration: none;
+      color: #ffffff;
+      width: 100%;
+    }
+    
+    .logo {
+    left: 0; /* Distancia desde el borde izquierdo */
+    width: 35px; /* Ajusta el tamaño de tu logo */
+    z-index: 1000; /* Asegura que esté por encima de otros elementos */
+    }
+
+    /* SECCIÓN HERO / PORTADA */
+    .hero {
+      background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
+                url('https://hips.hearstapps.com/hmg-prod/images/couple-watching-sunrise-while-camping-royalty-free-image-1591804233.jpg') center/cover no-repeat;
+      color: var(--white);
+      text-align: center;
+      padding: 2.5rem 1rem;
+    }
+
+    .hero h1 {
+      font-size: 2.2rem;
+      margin-bottom: 0.5rem;
+      font-style:unset;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      margin-bottom: 1.2rem;
+    }
+
+    /* SECCIÓN DE CATEGORÍAS */
+    .categories-section {
+      padding: 1rem 1rem;
+      background-color: var(--white);
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 1rem;
+      color: var(--primary-color);
+      font-size: 1.4rem;
+    }
+
+    .category-chips {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+      scroll-behavior: smooth;
+    }
+
+    .category-chip {
+      background-color: var(--light-color);
+      border: 1px solid var(--gray-border);
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      white-space: nowrap;
+      font-size: 0.9rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .category-chip.active, .category-chip:hover {
+      background-color: var(--primary-color);
+      color: var(--white);
+      border-color: var(--primary-color);
+    }
+
+    /* CATALOGO DE PRODUCTOS */
+    .products-section {
+      padding: 1rem 1rem;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+
+    .product-card {
+      background-color: var(--white);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .product-card img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;    
+      }
+
+    .product-info {
+      padding: 1rem;
+    }
+
+    .product-title {
+      font-size: 1.1rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .product-price {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: var(--primary-color);
+      margin-bottom: 0.8rem;
+    }
+
+    .btn-view {
+      width: 100%;
+      background-color: var(--secondary-color);
+      color: var(--white);
+      border: none;
+      padding: 0.75rem;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* MODAL DE VISTA PERSONALIZADA DE PRODUCTO */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      justify-content: center;
+      align-items: flex-end; /* Aparece desde abajo estilo App móvil */
+      z-index: 1000;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--white);
+      width: 100%;
+      max-height: 90vh;
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+      padding: 1.5rem;
+      overflow-y: auto;
+      position: relative;
+      animation: slideUp 0.3s ease-out;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 1rem;
+      right: 1.2rem;
+      font-size: 1.8rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .modal-img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+
+    /* SELECTORES DE VARIANTES (MODELO Y COLOR) */
+    .variant-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .variant-label {
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      display: block;
+      font-size: 0.95rem;
+    }
+
+    .option-select {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--gray-border);
+      border-radius: 8px;
+      font-size: 1rem;
+      background-color: var(--white);
+    }
+
+    .color-picker {
+      display: flex;
+      gap: 0.8rem;
+    }
+
+    .color-swatch {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid var(--gray-border);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .color-swatch.selected {
+      border: 3px solid var(--primary-color);
+      transform: scale(1.1);
+    }
+
+    .btn-add-cart {
+      width: 100%;
+      background-color: var(--primary-color);
+      color: var(--white);
+      border: none;
+      padding: 0.9rem;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+
+    /* FOOTER */
+    footer {
+      background-color: var(--dark-color);
+      color: var(--white);
+      text-align: center;
+      padding: 1.5rem 1rem;
+      font-size: 1rem;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ENCABEZADO -->
+  <header>
+    <a href="#" class="brand">
+    <img src="assets/Camping logo.png" alt="Logo CAMPING SHOP" class="logo">
+    <h class="logo-texto">CAMPING SHOP</h>
+    </a>
+  </header>
+
+  <!-- BANNER PRINCIPAL -->
+  <section class="hero">
+    <h1>CAMPING SHOP</h1>
+    <p>¡Aqui Comienza tu Aventura!</p>
+  </section>
+
+  <!-- SECCIÓN DE CATEGORÍAS -->
+  <section class="categories-section">
+    <h2 class="section-title">Categorías</h2>
+    <div class="category-chips">
+      <button class="category-chip active" onclick="filtrarCategoria('todas', this)">Todas</button>
+      <button class="category-chip" onclick="filtrarCategoria('bolsos', this)">🎒 Bolsos</button>
+      <button class="category-chip" onclick="filtrarCategoria('bastones', this)">🦯 Bastones</button>
+      <button class="category-chip" onclick="filtrarCategoria('rinoneras', this)">👝 Riñoneras</button>
+      <button class="category-chip" onclick="filtrarCategoria('ropa', this)">👕 Ropa</button>
+      <button class="category-chip" onclick="filtrarCategoria('accesorios', this)">🔦 Accesorios</button>
+    </div>
+  </section>
+
+  <!-- CATÁLOGO DE PRODUCTOS -->
+  <section class="products-section">
+    <div class="products-grid" id="contenedor-productos">
+      <!-- Los productos se cargan dinámicamente desde JS -->
+    </div>
+  </section>
+
+  <!-- VISTA PERSONALIZADA DE PRODUCTO (MODAL MODAL-FIRST) -->
+  <div class="modal-overlay" id="modal-producto">
+    <div class="modal-content">
+      <button class="close-modal" onclick="cerrarModal()">&times;</button>
+      <img id="modal-img" src="" alt="Producto" class="modal-img">
+      <div id="modal-galeria" class="modal-gallery"> 
+      </div>
+      <h3 id="modal-titulo">Nombre del Producto</h3>
+      <p id="modal-precio" class="product-price">$0.00</p>
+      
+      <!-- Selector de Modelos -->
+      <div class="variant-group">
+        <label class="variant-label" for="select-modelo">Modelo / Capacidad:</label>
+        <select id="select-modelo" class="option-select">
+          <!-- Opciones dinámicas -->
+        </select>
+      </div>
+
+      <!-- Selector de Colores -->
+      <div class="variant-group">
+        <span class="variant-label">Color Disponible:</span>
+        <div id="contenedor-colores" class="color-picker">
+          <!-- Círculos de color dinámicos -->
+        </div>
+      </div>
+
+      <button class="btn-add-cart" onclick="confirmarCompra()">Añadir al Carrito</button>
+    </div>
+  </div>
+
+  <!-- PIE DE PÁGINA -->
+  <footer>
+    <p> 2026 Camping Shop - Todos los derechos reservados.</p>
+  </footer>
+
+  <!-- LÓGICA JAVASCRIPT -->
+  <script>
+    // BASE DE DATOS DE PRODUCTOS CON CATEGORÍAS, MODELOS Y COLORES
+    const productosDB = [
+        //BOLSOS CAMELBACK
+      {
+        id: 1,
+        categoria: 'bolsos',
+        nombre: 'Camelback Negro',
+        precio: 24.99,
+        imagen: 'assets/Camelbacknegro.jpg', 
+        modelos: ['2 Litros'],
+        colores: [
+          { nombre: 'Azul', hex: '#003391' },
+          { nombre: 'Azul Marino', hex: '#182E49' },
+          { nombre: 'Azul Claro', hex: '#0087e1' }
+        ]
+      },
+      {
+        id: 1.1,
+        categoria: 'bolsos',
+        nombre: 'Camelback Azul Marino',
+        precio: 24.99,
+        imagen: 'assets/Camelbackoscuro.jpg', 
+        modelos: ['2 Litros'],
+        colores: [
+          { nombre: 'Azul', hex: '#003391' },
+          { nombre: 'Negro', hex: '#000000' },
+          { nombre: 'Azul Claro', hex: '#0087e1' }
+        ]
+      },
+      {
+        id: 1.2,
+        categoria: 'bolsos',
+        nombre: 'Camelback Azul Claro',
+        precio: 24.99,
+        imagen: 'assets/Camelbackazulclaro.jpg', 
+        modelos: ['2 Litros'],
+        colores: [
+          { nombre: 'Azul', hex: '#003391' },
+          { nombre: 'Negro', hex: '#000000' },
+          { nombre: 'Azul Marino', hex: '#182E49' }
+        ]
+      },
+      {
+        id: 1.3,
+        categoria: 'bolsos',
+        nombre: 'Camelback Azul',
+        precio: 24.99,
+        imagen: 'assets/Camelbackazul.jpg', 
+        modelos: ['2 Litros'],
+        colores: [
+          { nombre: 'Azul Claro', hex: '#0087e1' },
+          { nombre: 'Negro', hex: '#000000' },
+          { nombre: 'Azul Marino', hex: '#182E49' }
+        ]
+      },
+      {
+        id: 1.4,
+        categoria: 'bolsos',
+        nombre: 'Camelback Naranja',
+        precio: 24.99,
+        imagen: 'assets/Camelbacknaranja.jpg', 
+        modelos: ['2 Litros'],
+        colores: [
+          { nombre: 'Verde', hex: '#2dd10a' },
+          { nombre: 'Fucsia', hex: '#970215' },
+        ]
+      },
+      {
+        id: 1.5,
+        categoria: 'bolsos',
+        nombre: 'Camelback Verde',
+        precio: 24.99,
+        imagen: 'assets/Camelbackverde.jpg', 
+        modelos: ['2 Litros'],
+        colores: [
+          { nombre: 'Naranja', hex: '#F95D00' },
+          { nombre: 'Fucsia', hex: '#970215' },
+        ]
+      },
+      {
+        id: 1.6,
+        categoria: 'bolsos',
+        nombre: 'Camelback Fucsia',
+        precio: 24.99,
+        imagen: 'assets/Camelbackfucsia.jpg', 
+        modelos: ['2 Litros'],
+        colores: [
+          { nombre: 'Naranja', hex: '#F95D00' },
+          { nombre: 'Verde', hex: '#2dd10a' },
+        ]
+      },
+      //Bastones de trekking
+      {
+        id: 2,
+        categoria: 'bastones',
+        nombre: 'Bastón de Trekking Verde',
+        precio: 34.99,
+        imagen: 'assets/Bverde.jpg',
+        modelos: ['Incluye: Bolso, 4 tipos de puntas'],
+        colores: [
+          { nombre: 'Fucsia', hex: '#cc063c' },
+          { nombre: 'Amarillo', hex: '#f98900' },
+          { nombre: 'Gris', hex: '#5b5b5b' },
+          { nombre: 'Azul', hex: '#003391' },
+        ]
+      },
+      {
+        id: 2.1,
+        categoria: 'bastones',
+        nombre: 'Bastón de Trekking Fucsia',
+        precio: 34.99,
+        imagen: 'assets/Bfucsia.jpg',
+        modelos: ['Incluye: Bolso, 4 tipos de puntas'],
+        colores: [
+          { nombre: 'Verde', hex: '#2DD10A' },
+          { nombre: 'Amarillo', hex: '#f98900' },
+          { nombre: 'Gris', hex: '#5b5b5b' },
+          { nombre: 'Azul', hex: '#003391' },
+        ]
+      },
+      {
+        id: 2.2,
+        categoria: 'bastones',
+        nombre: 'Bastón de Trekking Amarillo',
+        precio: 34.99,
+        imagen: 'assets/Bamarillo.jpeg',
+        modelos: ['Incluye: Bolso, 4 tipos de puntas'],
+        colores: [
+          { nombre: 'Verde', hex: '#2DD10A' },
+          { nombre: 'Fucsia', hex: '#cc063c' },
+          { nombre: 'Gris', hex: '#5b5b5b' },
+          { nombre: 'Azul', hex: '#003391' },
+        ]
+      },
+      {
+        id: 2.3,
+        categoria: 'bastones',
+        nombre: 'Bastón de Trekking Azul',
+        precio: 34.99,
+        imagen: 'assets/Bazul.jpg',
+        modelos: ['Incluye: Bolso, 4 tipos de puntas'],
+        colores: [
+          { nombre: 'Verde', hex: '#2DD10A' },
+          { nombre: 'Amarillo', hex: '#f98900' },
+          { nombre: 'Gris', hex: '#5b5b5b' },
+          { nombre: 'Fucsia', hex: '#cc063c' },
+        ]
+      },
+      {
+        id: 2.4,
+        categoria: 'bastones',
+        nombre: 'Bastón de Trekking Gris',
+        precio: 34.99,
+        imagen: 'assets/Bgris.jpg',
+        modelos: ['Incluye: Bolso, 4 tipos de puntas'],
+        colores: [
+          { nombre: 'Verde', hex: '#2DD10A' },
+          { nombre: 'Fucsia', hex: '#cc063c' },
+          { nombre: 'Amarillo', hex: '#f98900' },
+          { nombre: 'Azul', hex: '#003391' },
+        ]
+      },
+      //Riñoneras running
+      {
+        id: 3,
+        categoria: 'rinoneras',
+        nombre: 'Riñonera Deportiva Running Gris',
+        precio: 5.99,
+        imagen: 'assets/kgris.jpg',
+        modelos: ['Porta termo, celular y llaves'],
+        colores: [ 
+          { nombre: 'Fucsia', hex: '#cc063c' },
+          { nombre: 'Verde', hex: '#2DD10A' },
+          { nombre: 'Azul', hex: '#003391'},
+        ]
+      },
+      {
+        id: 3.1,
+        categoria: 'rinoneras',
+        nombre: 'Riñonera Deportiva Running Azul',
+        precio: 5.99,
+        imagen: 'assets/kazul.jpg',
+        modelos: ['Porta termo, celular y llaves'],
+        colores: [ 
+          { nombre: 'Fucsia', hex: '#cc063c' },
+          { nombre: 'Verde', hex: '#2DD10A' },
+          { nombre: 'Gris', hex: '#5b5b5b'},
+        ]
+      },
+      {
+        id: 3.2,
+        categoria: 'rinoneras',
+        nombre: 'Riñonera Deportiva Running Verde',
+        precio: 5.99,
+        imagen: 'assets/kverde.jpg',
+        modelos: ['Porta termo, celular y llaves'],
+        colores: [ 
+          { nombre: 'Fucsia', hex: '#cc063c' },
+          { nombre: 'Gris', hex: '#5b5b5b' },
+          { nombre: 'Azul', hex: '#003391'},
+        ]
+      },
+      {
+        id: 3.3,
+        categoria: 'rinoneras',
+        nombre: 'Riñonera Deportiva Running fucsia',
+        precio: 5.99,
+        imagen: 'assets/kfucsia.jpg',
+        modelos: ['Porta termo, celular y llaves'],
+        colores: [ 
+          { nombre: 'Verde', hex: '#2DD10A' },
+          { nombre: 'Gris', hex: '#5b5b5b' },
+          { nombre: 'Azul', hex: '#003391'},
+        ]
+      },
+      //Accesorios bolsa y Linternas LED recargables
+      {
+        id: 4,
+        categoria: 'accesorios',
+        nombre: 'Linterna Frontal LED Recargable',
+        precio: 9.99,
+        imagen: 'assets/Linterna.jpeg',
+        modelos: ['Incluye cable USB y cinta ajustable para la cabeza'],
+        colores: [
+          {nombre: 'Gris', hex: '#5b5b5b'},
+        ]
+      },
+      {
+        id: 4.1,
+        categoria: 'accesorios',
+        nombre: 'Bolsa de Agua para Camelback',
+        precio: 9.99,
+        imagen: 'assets/Bolsas.jpeg',
+        modelos: ['2 Litros'],
+        colores: [
+          { nombre: 'Azul', hex: '#003391' },
+        ]
+      },
+      {
+        id: 4.2,
+        categoria: 'accesorios',
+        nombre: 'Kit de Limpieza para Bolsa de Agua',
+        precio: 9.99,
+        imagen: 'assets/KIT.jpeg',
+        modelos: ['Incluye 4 piezas: Cepillo, limpia manguera, soporte para colgar'],
+        colores: [
+          { nombre: 'Azul', hex: '#003391' },
+        ]
+      },
+      //Ropa Chaqueta-Cortaviento
+      {
+        id: 5,
+        categoria: 'ropa',
+        nombre: 'Chaqueta Impermeable Explore',
+        precio: 29.99,
+        imagen:'assets/CHnegra.jpeg',   
+        modelos: ['M', 'L', 'XL'],
+        colores: [
+          { nombre: 'Gris', hex: '#5b5b5b' },
+          { nombre: 'Rojo', hex: '#f40000' },
+          { nombre: 'Azul', hex: '#14344e' },
+        ]
+      },
+      {
+        id: 5.1,
+        categoria: 'ropa',
+        nombre: 'Chaqueta Impermeable Explore',
+        precio: 29.99,
+        imagen:'assets/CHazul.jpeg',   
+        modelos: ['M', 'L', 'XL'],
+        colores: [
+          { nombre: 'Gris', hex: '#5b5b5b' },
+          { nombre: 'Rojo', hex: '#f40000' },
+          { nombre: 'Negro', hex: '#000000' },
+        ]
+      },
+      {
+        id: 5.2,
+        categoria: 'ropa',
+        nombre: 'Chaqueta Impermeable Explore',
+        precio: 29.99,
+        imagen:'assets/CHroja.jpeg',   
+        modelos: ['M', 'L', 'XL'],
+        colores: [
+          { nombre: 'Gris', hex: '#5b5b5b' },
+          { nombre: 'Negro', hex: '#000000' },
+          { nombre: 'Azul', hex: '#14344e' },
+        ]
+      },
+      {
+        id: 5.3,
+        categoria: 'ropa',
+        nombre: 'Chaqueta Impermeable Explore',
+        precio: 29.99,
+        imagen:'assets/CHgris.jpeg',   
+        modelos: ['M', 'L', 'XL'],
+        colores: [
+          { nombre: 'Rojo', hex: '#f40000' },
+          { nombre: 'Negro', hex: '#000000' },
+          { nombre: 'Azul', hex: '#14344e' },
+        ]
+      }
+    ];
+
+    let productoSeleccionado = null;
+    let colorSeleccionado = '';
+
+    // CARGAR PRODUCTOS EN EL DOM
+    function renderizarProductos(lista) {
+      const contenedor = document.getElementById('contenedor-productos');
+      contenedor.innerHTML = '';
+
+      lista.forEach(p => {
+        const card = document.createElement('article');
+        card.className = 'product-card';
+        card.innerHTML = `
+          <img src="${p.imagen}" alt="${p.nombre}">
+          <div class="product-info">
+            <h3 class="product-title">${p.nombre}</h3>
+            <div class="product-price">$${p.precio.toFixed(2)}</div>
+            <button class="btn-view" onclick="abrirModal(${p.id})">Comprar</button>
+          </div>
+        `;
+        contenedor.appendChild(card);
+      });
+    }
+
+    // MODAL Y GENERAR GALERIA DE MINIATURAS
+    function abrirModal(id) {
+      productoSeleccionado = productosDB.find(p => p.id === id);
+
+      // Mostrar la primera imagen por defecto en grande
+      const imgPrincipal = document.getElementById('modal-img');
+      imgPrincipal.src = productoSeleccionado.imagenes[0];
+
+      document.getElementById('modal-titulo').innerText = productoSeleccionado.nombre;
+      document.getElementById('modal-precio').innerText = `$${productoSeleccionado.precio.toFixed(2)}`;
+      
+      // Miniatura de la galeria del modal
+      const galeriaContenedor = document.getElementById('modal-galeria');
+      galeriaContenedor.innerHTML = '';
+
+      productoSeleccionado.imagenes.forEach(imgSrc => {
+        const thumb = document.createElement('img');
+        thumb.src = imgSrc;
+        thumb.className = `thumbnail-img ${index === 0 ? 'active' : ''}`;
+        thumb.onclick = () => {
+          imgPrincipal.src = imgUrl;
+          document.querySelectorAll('.thumbnail-img').forEach(t => t.classList.remove('active'));
+          thumb.classList.add('active');
+        };
+        galeriaContenedor.appendChild(thumb);
+      });
+      // Cargar opciones de Modelos
+  const selectModelo = document.getElementById('select-modelo');
+  selectModelo.innerHTML = '';
+  productoSeleccionado.modelos.forEach(mod => {
+    const opt = document.createElement('option');
+    opt.value = mod;
+    opt.innerText = mod;
+    selectModelo.appendChild(opt);
+  });
+
+  // Cargar opciones de Colores
+  const contenedorColores = document.getElementById('contenedor-colores');
+  contenedorColores.innerHTML = '';
+  colorSeleccionado = productoSeleccionado.colores[0].nombre;
+
+  productoSeleccionado.colores.forEach((c, index) => {
+    const swatch = document.createElement('div');
+    swatch.className = `color-swatch ${index === 0 ? 'selected' : ''}`;
+    swatch.style.backgroundColor = c.hex;
+    swatch.title = c.nombre;
+    swatch.onclick = () => seleccionarColor(swatch, c.nombre);
+    contenedorColores.appendChild(swatch);
+  });
+
+  document.getElementById('modal-producto').classList.add('active');
+}
+    // FILTRADO POR CATEGORÍAS
+    function filtrarCategoria(categoria, elementoBtn) {
+      document.querySelectorAll('.category-chip').forEach(btn => btn.classList.remove('active'));
+      elementoBtn.classList.add('active');
+
+      if (categoria === 'todas') {
+        renderizarProductos(productosDB);
+      } else {
+        const filtrados = productosDB.filter(p => p.categoria === categoria);
+        renderizarProductos(filtrados);
+      }
+    }
+
+    // ABRIR VISTA PERSONALIZADA (MODAL)
+    function abrirModal(id) {
+      productoSeleccionado = productosDB.find(p => p.id === id);
+      
+      document.getElementById('modal-img').src = productoSeleccionado.imagen;
+      document.getElementById('modal-titulo').innerText = productoSeleccionado.nombre;
+      document.getElementById('modal-precio').innerText = `$${productoSeleccionado.precio.toFixed(2)}`;
+
+      // Cargar opciones de Modelo
+      const selectModelo = document.getElementById('select-modelo');
+      selectModelo.innerHTML = '';
+      productoSeleccionado.modelos.forEach(mod => {
+        const opt = document.createElement('option');
+        opt.value = mod;
+        opt.innerText = mod;
+        selectModelo.appendChild(opt);
+      });
+
+      // Cargar opciones de Color
+      const contenedorColores = document.getElementById('contenedor-colores');
+      contenedorColores.innerHTML = '';
+      colorSeleccionado = productoSeleccionado.colores[0].nombre;
+
+      productoSeleccionado.colores.forEach((c, index) => {
+        const swatch = document.createElement('div');
+        swatch.className = `color-swatch ${index === 0 ? 'selected' : ''}`;
+        swatch.style.backgroundColor = c.hex;
+        swatch.title = c.nombre;
+        swatch.onclick = () => seleccionarColor(swatch, c.nombre);
+        contenedorColores.appendChild(swatch);
+      });
+
+      document.getElementById('modal-producto').classList.add('active');
+    }
+
+    function seleccionarColor(elemento, nombreColor) {
+      document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
+      elemento.classList.add('selected');
+      colorSeleccionado = nombreColor;
+    }
+
+    function cerrarModal() {
+      document.getElementById('modal-producto').classList.remove('active');
+    }
+
+    function confirmarCompra() {
+  // 1. Obtiene el modelo seleccionado en el menú desplegable
+  const modelo = document.getElementById('select-modelo').value;
+  
+  // 2. Define tu número de teléfono de WhatsApp (incluye código de país, sin el símbolo +)
+  // Ejemplo para México: 521XXXXXXXXXX | Ejemplo para España: 34XXXXXXXXX
+  const telefonoWhatsApp = "5804124869193"; 
+
+  // 3. Crea el mensaje personalizado con los detalles seleccionados por el cliente
+  const mensaje = `¡Hola! Me interesa comprar:\n\n` +
+                  `*Producto:* ${productoSeleccionado.nombre}\n` +
+                  `*Modelo:* ${modelo}\n` +
+                  `*Color:* ${colorSeleccionado}\n` +
+                  `*Precio:* $${productoSeleccionado.precio.toFixed(2)}\n\n` +
+                  `¿Me podrían dar información sobre el pago y envío?`;
+
+  // 4. Codifica el texto para que sea apto para una URL web
+  const mensajeCodificado = encodeURIComponent(mensaje);
+
+  // 5. Genera el enlace oficial de WhatsApp
+  const urlWhatsApp = `https://wa.me/${telefonoWhatsApp}?text=${mensajeCodificado}`;
+
+  // 6. Redirige al usuario directamente al chat de WhatsApp
+  window.open(urlWhatsApp, '_blank');
+
+  // Opcional: Cierra el modal de la vista personalizada
+  cerrarModal();
+    }
+
+    // INICIALIZACIÓN
+    window.onload = () => {
+      renderizarProductos(productosDB);
+    };
+  </script>
+</body>
+</html>
